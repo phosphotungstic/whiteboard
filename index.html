@@ -8,9 +8,22 @@
 </head>
 <body>
 <canvas id="draw" width="800" height="800"></canvas>
+<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAB6ypVdrTD8gdpGRx8hYQtfOF_jFmRWWA",
+        authDomain: "whiteboardlazhackathon.firebaseapp.com",
+        databaseURL: "https://whiteboardlazhackathon.firebaseio.com",
+        projectId: "whiteboardlazhackathon",
+        storageBucket: "whiteboardlazhackathon.appspot.com",
+        messagingSenderId: "934893038393"
+    };
+    firebase.initializeApp(config);
+</script>
 <script>
     const firebaseURL = "https://umdjm.firebaseio.com/test";
-    let firebaseRef = new Firebase(firebaseURL);
+    let firebaseRef = firebase.database().ref('/whiteboardlazhackathon');
 
     const canvas = document.querySelector('#draw');
     const ctx = canvas.getContext('2d');
