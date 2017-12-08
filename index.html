@@ -23,7 +23,7 @@
 </script>
 <script>
     const firebaseURL = "https://umdjm.firebaseio.com/test";
-    let firebaseRef = firebase.database().ref('/whiteboardlazhackathon');
+    let firebaseRef = firebase.database().ref('/drawCommands');
 
     const canvas = document.querySelector('#draw');
     const ctx = canvas.getContext('2d');
@@ -45,7 +45,9 @@
             endy: e.offsetY
         };
 
-        firebaseRef.push(segmentData);
+        firebaseRef.push(segmentData).catch(function(error){
+           console.log(error);
+        });
     }
 
     function drawSegment(segmentData){
