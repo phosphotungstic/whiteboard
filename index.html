@@ -87,6 +87,7 @@
         ctx.lineWidth = segmentData.lineWidth;
         ctx.moveTo(segmentData.startX, segmentData.startY);
         ctx.lineTo(segmentData.endX, segmentData.endY);
+        ctx.lineCap = 'round';
         ctx.stroke();
     }
 
