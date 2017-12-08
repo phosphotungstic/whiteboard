@@ -62,6 +62,8 @@
     function recordDrawEvent(e) {
         if (!isDrawing) return;
 
+        console.log('drawing');
+
         var segmentData = {
             startX: lastX,
             startY: lastY,
@@ -76,7 +78,6 @@
     }
 
     function drawSegment(segmentData){
-        console.log(segmentData);
         ctx.beginPath();
         ctx.strokeStyle = segmentData.strokeStyle;
         ctx.lineWidth = segmentData.lineWidth;
@@ -105,18 +106,30 @@
     });
 
     firebase.database().ref('/').on("child_removed", function(child){
-        console.log(child);
         clearHTML5Canvas();
     });
 
-    canvas.addEventListener('mousedown', (e) => {
-        isDrawing = true;
-        [lastX, lastY] = [e.offsetX, e.offsetY];
-    });
+    registerDrawingListiners();
 
-    canvas.addEventListener('mousemove', recordDrawEvent);
-    canvas.addEventListener('mouseup', () => isDrawing = false);
-    canvas.addEventListener('mouseout', () => isDrawing = false);
+
+    function registerDrawingListiners(){
+        window.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        });
+        window.addEventListener('mouseup', () => {
+            isDrawing = false;
+        });
+
+        canvas.addEventListener('mousemove', recordDrawEvent);
+
+        canvas.addEventListener('mouseenter', (e) => {
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        });
+        canvas.addEventListener('mouseout', (e) => {
+            recordDrawEvent(e);
+        });
+    }
 </script>
 
 <style>
