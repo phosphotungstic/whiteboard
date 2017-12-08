@@ -17,6 +17,9 @@
     <input type="range" min="1" max="100" class="slider" id="brushsize" onchange="updateRange(this.value)" value="1">
     <div class="center" id="rangeval">1</div>
 </div>
+<div>
+    <button onclick="clearDrawingCanvas()">Clear</button>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
 <script>
@@ -62,7 +65,8 @@
             startY: lastY,
             endX: e.offsetX,
             endY: e.offsetY,
-            strokeStyle: ctx.strokeStyle
+            strokeStyle: ctx.strokeStyle,
+            strokeWidth: ctx.strokeWidth ? ctx.strokeWidth : 1
         };
 
         firebaseRef.push(segmentData);
@@ -73,9 +77,17 @@
         console.log(segmentData);
         ctx.beginPath();
         ctx.strokeStyle = segmentData.strokeStyle;
+        ctx.strokeWidth = segmentData.strokeWidth;
         ctx.moveTo(segmentData.startX, segmentData.startY);
         ctx.lineTo(segmentData.endX, segmentData.endY);
         ctx.stroke();
+    }
+
+    function clearDrawingCanvas(){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        firebaseRef.remove().then(function(){
+
+        });
     }
     
     function updateRange(val) {
@@ -83,8 +95,11 @@
         ctx.lineWidth=val;
     }
 
-    firebaseRef.on("child_added", function(s){
-        drawSegment(s.val());
+    firebaseRef.on("child_added", function(child, prevKey){
+        if(!prevKey)
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawSegment(child.val());
     });
 
     canvas.addEventListener('mousedown', (e) => {
