@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Whiteboard Hackathon Project</title>
-
-    <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <canvas class="center" id="draw" width="800" height="800"></canvas>
@@ -24,6 +23,9 @@
 <div id="imageList">
 
 </div>
+<b>Brush Modes:</b>
+<button onclick="setDefaultMode()">Default</button>
+<button onclick="setPostItMode()">Post-it Mode</button>
 
 <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
 <script>
@@ -37,9 +39,7 @@
         messagingSenderId: "233386822869"
     };
     firebase.initializeApp(config);
-</script>
-<script>
-    let firebaseRef = firebase.database().ref('/drawCommands');
+    let drawCommandsFirebase = firebase.database().ref('/drawCommands');
     let imageData = firebase.database().ref('/imageData');
     let storage = firebase.storage();
 
@@ -51,7 +51,9 @@
     let isDrawing = false;
     let lastX = 0;
     let lastY = 0;
+    let postItMode = false;
     let savedStrokeStyle = "Black";
+    let savedLineWidth = 1;
     var CSS_COLOR_NAMES = ["AliceBlue","AntiqueWhite","Aqua","Aquamarine","Azure","Beige","Bisque","Black","BlanchedAlmond","Blue","BlueViolet","Brown","BurlyWood","CadetBlue","Chartreuse","Chocolate","Coral","CornflowerBlue","Cornsilk","Crimson","Cyan","DarkBlue","DarkCyan","DarkGoldenRod","DarkGray","DarkGrey","DarkGreen","DarkKhaki","DarkMagenta","DarkOliveGreen","Darkorange","DarkOrchid","DarkRed","DarkSalmon","DarkSeaGreen","DarkSlateBlue","DarkSlateGray","DarkSlateGrey","DarkTurquoise","DarkViolet","DeepPink","DeepSkyBlue","DimGray","DimGrey","DodgerBlue","FireBrick","FloralWhite","ForestGreen","Fuchsia","Gainsboro","GhostWhite","Gold","GoldenRod","Gray","Grey","Green","GreenYellow","HoneyDew","HotPink","IndianRed","Indigo","Ivory","Khaki","Lavender","LavenderBlush","LawnGreen","LemonChiffon","LightBlue","LightCoral","LightCyan","LightGoldenRodYellow","LightGray","LightGrey","LightGreen","LightPink","LightSalmon","LightSeaGreen","LightSkyBlue","LightSlateGray","LightSlateGrey","LightSteelBlue","LightYellow","Lime","LimeGreen","Linen","Magenta","Maroon","MediumAquaMarine","MediumBlue","MediumOrchid","MediumPurple","MediumSeaGreen","MediumSlateBlue","MediumSpringGreen","MediumTurquoise","MediumVioletRed","MidnightBlue","MintCream","MistyRose","Moccasin","NavajoWhite","Navy","OldLace","Olive","OliveDrab","Orange","OrangeRed","Orchid","PaleGoldenRod","PaleGreen","PaleTurquoise","PaleVioletRed","PapayaWhip","PeachPuff","Peru","Pink","Plum","PowderBlue","Purple","Red","RosyBrown","RoyalBlue","SaddleBrown","Salmon","SandyBrown","SeaGreen","SeaShell","Sienna","Silver","SkyBlue","SlateBlue","SlateGray","SlateGrey","Snow","SpringGreen","SteelBlue","Tan","Teal","Thistle","Tomato","Turquoise","Violet","Wheat","White","WhiteSmoke","Yellow","YellowGreen"];
 
     CSS_COLOR_NAMES.forEach(color => {
@@ -68,60 +70,54 @@
     function recordDrawEvent(e) {
         if (!isDrawing) return;
 
+        console.log('drawing');
+
         var segmentData = {
             startX: lastX,
             startY: lastY,
             endX: e.offsetX,
             endY: e.offsetY,
             strokeStyle: savedStrokeStyle,
-            lineWidth: ctx.lineWidth
+            lineWidth: savedLineWidth,
+            isPostItMode: postItMode
         };
 
-        firebaseRef.push(segmentData);
+        drawCommandsFirebase.push(segmentData);
         [lastX, lastY] = [e.offsetX, e.offsetY];
     }
 
     function drawSegment(segmentData){
-        console.log(segmentData);
         ctx.beginPath();
         ctx.strokeStyle = segmentData.strokeStyle;
         ctx.lineWidth = segmentData.lineWidth;
         ctx.moveTo(segmentData.startX, segmentData.startY);
         ctx.lineTo(segmentData.endX, segmentData.endY);
+        ctx.lineCap = 'round';
         ctx.stroke();
     }
 
-    function clearDrawingCanvas(){
+    function clearHTML5Canvas(){
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        firebaseRef.remove().then(function(){
+    }
+
+    function clearDrawingCanvas(){
+        drawCommandsFirebase.remove().then(function(){
 
         });
     }
 
     function updateRange(val) {
         document.querySelector('#rangeval').innerHTML = val;
-        ctx.lineWidth=val;
+        savedLineWidth = val;
     }
 
-    firebaseRef.on("child_added", function(child, prevKey){
-        if(!prevKey)
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    drawCommandsFirebase.on("child_added", function(child, prevKey){
         drawSegment(child.val());
     });
 
     imageData.on("child_added", function(child){
         addImage(child.val());
     });
-
-    canvas.addEventListener('mousedown', (e) => {
-        isDrawing = true;
-        [lastX, lastY] = [e.offsetX, e.offsetY];
-    });
-
-    canvas.addEventListener('mousemove', recordDrawEvent);
-    canvas.addEventListener('mouseup', () => isDrawing = false);
-    canvas.addEventListener('mouseout', () => isDrawing = false);
 
     function saveCanvasToStorage(){
         let fileName = "whiteboardBlob" + (new Date().valueOf());
@@ -141,36 +137,46 @@
         });
     }
 
+    firebase.database().ref('/').on("child_removed", function(child){
+        clearHTML5Canvas();
+    });
+
+    registerDrawingListiners();
+
+    function setDefaultMode() {
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = '';
+        postItMode = false;
+    }
+
+    function setPostItMode() {
+        ctx.shadowBlur = 70;
+        ctx.shadowColor = 'rgb(0, 0, 0)';
+        postItMode = true;
+    }
+
+    function registerDrawingListiners(){
+        window.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        });
+        window.addEventListener('mouseup', () => {
+            isDrawing = false;
+        });
+
+        canvas.addEventListener('mousemove', recordDrawEvent);
+
+        canvas.addEventListener('mouseenter', (e) => {
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        });
+        canvas.addEventListener('mouseout', (e) => {
+            recordDrawEvent(e);
+        });
+    }
 </script>
 
 <style>
-    html, body {
-        margin:0;
-    }
-    canvas {
-        border: solid;
-    }
-    .center {
-        margin: 0 auto;
-        display: block;
-    }
-    .squareholder {
-        margin: 10px 0 0 0;
-    }
-    .colorsquare {
-        height: 20px;
-        width: 20px;
-        display: inline-block;
-        border:solid;
-        border-width: 1px;
-        margin: 0 5px 0 0;
-    }
-    .sliderdiv {
-        width: 60%;
-    }
-    #brushsize {
-        width: 100%;
-    }
+
 </style>
 </body>
 </html>
