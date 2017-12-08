@@ -85,13 +85,9 @@
         ctx.beginPath();
         ctx.strokeStyle = segmentData.strokeStyle;
         ctx.lineWidth = segmentData.lineWidth;
-        if(segmentData.isPostItMode) {
-            setPostItMode();
-        }
         ctx.moveTo(segmentData.startX, segmentData.startY);
         ctx.lineTo(segmentData.endX, segmentData.endY);
         ctx.stroke();
-        setDefaultMode();
     }
 
     function clearHTML5Canvas(){
