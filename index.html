@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Whiteboard Hackathon Project</title>
+
+    <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
 </head>
 <body>
 <canvas id="draw" width="800" height="800"></canvas>
 <script>
+    const firebaseURL = "https://umdjm.firebaseio.com/test";
+    let firebaseRef = new Firebase(firebaseURL);
+
     const canvas = document.querySelector('#draw');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -15,20 +20,38 @@
     let lastX = 0;
     let lastY = 0;
 
-    function draw(e) {
+    function recordDrawEvent(e) {
         if (!isDrawing) return;
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.stroke();
+
         [lastX, lastY] = [e.offsetX, e.offsetY];
+
+        var segmentData = {
+            startX: lastX,
+            startY: lastY,
+            endX: e.offsetX,
+            endy: e.offsetY
+        };
+
+        firebaseRef.push(segmentData);
     }
+
+    function drawSegment(segmentData){
+        ctx.beginPath();
+        ctx.moveTo(segmentData.startX, segmentData.startY);
+        ctx.lineTo(segmentData.endX, segmentData.endY);
+        ctx.stroke();
+    }
+
+    firebaseRef.on("child_added", function(s){
+        drawSegment(s.val());
+    });
 
     canvas.addEventListener('mousedown', (e) => {
         isDrawing = true;
         [lastX, lastY] = [e.offsetX, e.offsetY];
     });
-    canvas.addEventListener('mousemove', draw);
+
+    canvas.addEventListener('mousemove', recordDrawEvent);
     canvas.addEventListener('mouseup', () => isDrawing = false);
     canvas.addEventListener('mouseout', () => isDrawing = false);
 </script>
