@@ -20,6 +20,9 @@
 <div>
     <button onclick="clearDrawingCanvas()">Clear</button>
 </div>
+<b>Brush Modes:</b>
+<button onclick="setDefault()">Default</button>
+<button onclick="setPostItMode()">Post-it Mode</button>
 
 <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
 <script>
@@ -104,10 +107,22 @@
         drawSegment(child.val());
     });
 
+<<<<<<< Updated upstream
     firebase.database().ref('/').on("child_removed", function(child){
         console.log(child);
         clearHTML5Canvas();
     });
+=======
+    function setDefault() {
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = '';
+    }
+
+    function setPostItMode() {
+        ctx.shadowBlur = 70;
+        ctx.shadowColor = 'rgb(0, 0, 0)';
+    }
+>>>>>>> Stashed changes
 
     canvas.addEventListener('mousedown', (e) => {
         isDrawing = true;
