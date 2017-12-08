@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Whiteboard Hackathon Project</title>
+
+    <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
 </head>
 <body>
 <canvas class="center" id="draw" width="800" height="800"></canvas>
@@ -16,7 +18,23 @@
     <div class="center" id="rangeval">1</div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
 <script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAB6ypVdrTD8gdpGRx8hYQtfOF_jFmRWWA",
+        authDomain: "whiteboardlazhackathon.firebaseapp.com",
+        databaseURL: "https://whiteboardlazhackathon.firebaseio.com",
+        projectId: "whiteboardlazhackathon",
+        storageBucket: "whiteboardlazhackathon.appspot.com",
+        messagingSenderId: "934893038393"
+    };
+    firebase.initializeApp(config);
+</script>
+<script>
+    const firebaseURL = "https://umdjm.firebaseio.com/test";
+    let firebaseRef = firebase.database().ref('/drawCommands');
+
     const canvas = document.querySelector('#draw');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth/2;
@@ -37,25 +55,47 @@
         document.querySelector('.squareholder').append(colorSquareDiv);
     });
 
-    function draw(e) {
+    function recordDrawEvent(e) {
         if (!isDrawing) return;
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.stroke();
+
         [lastX, lastY] = [e.offsetX, e.offsetY];
+
+        var segmentData = {
+            startX: lastX,
+            startY: lastY,
+            endX: e.offsetX,
+            endy: e.offsetY
+        };
+
+        firebaseRef.push(segmentData).catch(function(error){
+           console.log(error);
+        });
     }
 
+    function drawSegment(segmentData){
+        ctx.beginPath();
+        ctx.moveTo(segmentData.startX, segmentData.startY);
+        ctx.lineTo(segmentData.endX, segmentData.endY);
+        ctx.stroke();
+    }
+
+<<<<<<< HEAD
     function updateRange(val) {
         document.querySelector('#rangeval').innerHTML = val;
         ctx.lineWidth=val;
     }
+=======
+    firebaseRef.on("child_added", function(s){
+        drawSegment(s.val());
+    });
+>>>>>>> 690a01d86c06e346f92ada7fd1600f190009fddf
 
     canvas.addEventListener('mousedown', (e) => {
         isDrawing = true;
         [lastX, lastY] = [e.offsetX, e.offsetY];
     });
-    canvas.addEventListener('mousemove', draw);
+
+    canvas.addEventListener('mousemove', recordDrawEvent);
     canvas.addEventListener('mouseup', () => isDrawing = false);
     canvas.addEventListener('mouseout', () => isDrawing = false);
 </script>
