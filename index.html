@@ -36,21 +36,19 @@
     function recordDrawEvent(e) {
         if (!isDrawing) return;
 
-        [lastX, lastY] = [e.offsetX, e.offsetY];
-
         var segmentData = {
             startX: lastX,
             startY: lastY,
             endX: e.offsetX,
-            endy: e.offsetY
+            endY: e.offsetY
         };
 
-        firebaseRef.push(segmentData).catch(function(error){
-           console.log(error);
-        });
+        firebaseRef.push(segmentData);
+        [lastX, lastY] = [e.offsetX, e.offsetY];
     }
 
     function drawSegment(segmentData){
+        console.log(segmentData);
         ctx.beginPath();
         ctx.moveTo(segmentData.startX, segmentData.startY);
         ctx.lineTo(segmentData.endX, segmentData.endY);
