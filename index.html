@@ -19,26 +19,33 @@
 </div>
 <div>
     <button onclick="clearDrawingCanvas()">Clear</button>
+    <button onclick="saveCanvasToStorage()">Save</button>
+</div>
+<div id="imageList">
+
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
 <script>
     // Initialize Firebase
     var config = {
-        apiKey: "AIzaSyAB6ypVdrTD8gdpGRx8hYQtfOF_jFmRWWA",
-        authDomain: "whiteboardlazhackathon.firebaseapp.com",
-        databaseURL: "https://whiteboardlazhackathon.firebaseio.com",
-        projectId: "whiteboardlazhackathon",
-        storageBucket: "whiteboardlazhackathon.appspot.com",
-        messagingSenderId: "934893038393"
+        apiKey: "AIzaSyD1UpC3qnghh_tnubRqRRaEAJ0-3yKY-eo",
+        authDomain: "whiteboard-57ece.firebaseapp.com",
+        databaseURL: "https://whiteboard-57ece.firebaseio.com",
+        projectId: "whiteboard-57ece",
+        storageBucket: "whiteboard-57ece.appspot.com",
+        messagingSenderId: "233386822869"
     };
     firebase.initializeApp(config);
 </script>
 <script>
     let firebaseRef = firebase.database().ref('/drawCommands');
+    let imageData = firebase.database().ref('/imageData');
+    let storage = firebase.storage();
 
     const canvas = document.querySelector('#draw');
     const ctx = canvas.getContext('2d');
+    const imageList = document.querySelector('#imageList');
     canvas.width = window.innerWidth/2;
     canvas.height = window.innerHeight/2;
     let isDrawing = false;
@@ -90,7 +97,7 @@
 
         });
     }
-    
+
     function updateRange(val) {
         document.querySelector('#rangeval').innerHTML = val;
         ctx.lineWidth=val;
@@ -103,6 +110,10 @@
         drawSegment(child.val());
     });
 
+    imageData.on("child_added", function(child){
+        addImage(child.val());
+    });
+
     canvas.addEventListener('mousedown', (e) => {
         isDrawing = true;
         [lastX, lastY] = [e.offsetX, e.offsetY];
@@ -111,6 +122,25 @@
     canvas.addEventListener('mousemove', recordDrawEvent);
     canvas.addEventListener('mouseup', () => isDrawing = false);
     canvas.addEventListener('mouseout', () => isDrawing = false);
+
+    function saveCanvasToStorage(){
+        let fileName = "whiteboardBlob" + (new Date().valueOf());
+        let fileRef = storage.ref().child(fileName);
+
+        fileRef.putString(canvas.toDataURL(), 'data_url').then(function(snapshot) {
+            console.log('Uploaded ' + fileName);
+            imageData.push(fileName);
+        });
+    }
+
+    function addImage(fileName){
+        storage.ref().child(fileName).getDownloadURL().then(function(url) {
+            let img = document.createElement("img");
+            img.src = url;
+            imageList.appendChild(img);
+        });
+    }
+
 </script>
 
 <style>
