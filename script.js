@@ -10,8 +10,7 @@ var config = {
 
 firebase.initializeApp(config);
 let drawCommandsFirebase = firebase.database().ref('/drawCommands');
-let imageData = firebase.database().ref('/imageData');
-let storage = firebase.storage();
+let imagesRef = firebase.database().ref('/images');
 
 const canvas = document.querySelector('#draw');
 const ctx = canvas.getContext('2d');
@@ -84,28 +83,6 @@ function updateRange(val) {
 drawCommandsFirebase.on("child_added", function(child, prevKey){
     drawSegment(child.val());
 });
-
-imageData.on("child_added", function(child){
-    addImage(child.val());
-});
-
-function saveCanvasToStorage(){
-    let fileName = "whiteboardBlob" + (new Date().valueOf());
-    let fileRef = storage.ref().child(fileName);
-
-    fileRef.putString(canvas.toDataURL(), 'data_url').then(function(snapshot) {
-        console.log('Uploaded ' + fileName);
-        imageData.push(fileName);
-    });
-}
-
-function addImage(fileName){
-    storage.ref().child(fileName).getDownloadURL().then(function(url) {
-        let img = document.createElement("img");
-        img.src = url;
-        imageList.appendChild(img);
-    });
-}
 
 firebase.database().ref('/').on("child_removed", function(child){
     clearHTML5Canvas();

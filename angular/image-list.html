@@ -1,0 +1,7 @@
+<button ng-click="$ctrl.saveCanvas()">Save Image</button>
+<h1>Saved Images</h1>
+<ul>
+    <li ng-repeat="image in $ctrl.images">
+        <img ng-src="{{image.$value}}"/>
+    </li>
+</ul>

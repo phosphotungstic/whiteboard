@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="whiteboard">
 <head>
     <meta charset="UTF-8">
     <title>Whiteboard Hackathon Project</title>
@@ -22,13 +22,17 @@
 
 <div>
     <button onclick="clearDrawingCanvas()">Clear</button>
-    <button onclick="saveCanvasToStorage()">Save</button>
 </div>
-<div id="imageList">
-
-</div>
+<image-list canvas-selector="#draw">
+</image-list>
 
 <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
 <script src="script.js"></script>
+<script src="angular/whiteboard.module.js"></script>
+<script src="angular/image-list.component.js"></script>
+<script src="angular/images.service.js"></script>
 </body>
 </html>
