@@ -78,17 +78,15 @@
         ctx.lineTo(segmentData.endX, segmentData.endY);
         ctx.stroke();
     }
-
-<<<<<<< HEAD
+    
     function updateRange(val) {
         document.querySelector('#rangeval').innerHTML = val;
         ctx.lineWidth=val;
     }
-=======
+
     firebaseRef.on("child_added", function(s){
         drawSegment(s.val());
     });
->>>>>>> 690a01d86c06e346f92ada7fd1600f190009fddf
 
     canvas.addEventListener('mousedown', (e) => {
         isDrawing = true;
