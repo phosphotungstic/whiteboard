@@ -16,6 +16,10 @@
     <input type="range" min="1" max="100" class="slider" id="brushsize" onchange="updateRange(this.value)" value="1">
     <div class="center" id="rangeval">1</div>
 </div>
+<b>Brush Modes:</b>
+<button onclick="setDefaultMode()">Default</button>
+<button onclick="setPostItMode()">Post-it Mode</button>
+
 <div>
     <button onclick="clearDrawingCanvas()">Clear</button>
     <button onclick="saveCanvasToStorage()">Save</button>
@@ -23,9 +27,6 @@
 <div id="imageList">
 
 </div>
-<b>Brush Modes:</b>
-<button onclick="setDefaultMode()">Default</button>
-<button onclick="setPostItMode()">Post-it Mode</button>
 
 <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
 <script>
