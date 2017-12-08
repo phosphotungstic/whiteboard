@@ -15,8 +15,8 @@ let imagesRef = firebase.database().ref('/images');
 const canvas = document.querySelector('#draw');
 const ctx = canvas.getContext('2d');
 const imageList = document.querySelector('#imageList');
-canvas.width = window.innerWidth/2;
-canvas.height = window.innerHeight/2;
+canvas.width = window.innerWidth / 2;
+canvas.height = window.innerHeight / 2;
 let isDrawing = false;
 let lastX = 0;
 let lastY = 0;
@@ -37,30 +37,33 @@ CSS_COLOR_NAMES.forEach(color => {
 });
 
 function recordDrawEvent(e) {
+    let {x: newX, y: newY} = canvasToRelativeCoordinates({x: e.offsetX, y: e.offsetY});
     if (!isDrawing) return;
 
     console.log('drawing');
 
-    var segmentData = {
+    let segmentData = {
         startX: lastX,
         startY: lastY,
-        endX: e.offsetX,
-        endY: e.offsetY,
+        endX: newX,
+        endY: newY,
         strokeStyle: savedStrokeStyle,
         lineWidth: savedLineWidth,
         isPostItMode: postItMode
     };
 
     drawCommandsFirebase.push(segmentData);
-    [lastX, lastY] = [e.offsetX, e.offsetY];
+    [lastX, lastY] = [newX, newY];
 }
 
 function drawSegment(segmentData){
     ctx.beginPath();
     ctx.strokeStyle = segmentData.strokeStyle;
     ctx.lineWidth = segmentData.lineWidth;
-    ctx.moveTo(segmentData.startX, segmentData.startY);
-    ctx.lineTo(segmentData.endX, segmentData.endY);
+    let {x: startX, y: startY} = relativeToCanvasCoordinates({x: segmentData.startX, y: segmentData.startY});
+    let {x: endX, y: endY} = relativeToCanvasCoordinates({x: segmentData.endX, y: segmentData.endY});
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
     ctx.lineCap = 'round';
     ctx.stroke();
 }
@@ -105,7 +108,7 @@ function setPostItMode() {
 function registerDrawingListiners(){
     window.addEventListener('mousedown', (e) => {
         isDrawing = true;
-        [lastX, lastY] = [e.offsetX, e.offsetY];
+        ({x: lastX, y: lastY} = canvasToRelativeCoordinates({x: e.offsetX, y: e.offsetY}));
     });
     window.addEventListener('mouseup', () => {
         isDrawing = false;
@@ -114,9 +117,27 @@ function registerDrawingListiners(){
     canvas.addEventListener('mousemove', recordDrawEvent);
 
     canvas.addEventListener('mouseenter', (e) => {
-        [lastX, lastY] = [e.offsetX, e.offsetY];
+        ({x: lastX, y: lastY} = canvasToRelativeCoordinates({x: e.offsetX, y: e.offsetY}));
     });
     canvas.addEventListener('mouseout', (e) => {
         recordDrawEvent(e);
     });
+}
+
+
+function canvasToRelativeCoordinates(canvasCoords){
+    if(canvas.width && canvas.height){
+        return {
+            x: canvasCoords.x / canvas.width,
+            y: canvasCoords.y / canvas.height
+        }
+    }
+    throw 'Cannot get canvasCoords on canvas with no x or y dimension';
+}
+
+function relativeToCanvasCoordinates(relativeCoords){
+    return {
+        x: relativeCoords.x * canvas.width,
+        y: relativeCoords.y * canvas.height
+    }
 }
