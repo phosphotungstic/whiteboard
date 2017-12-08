@@ -32,7 +32,6 @@
     firebase.initializeApp(config);
 </script>
 <script>
-    const firebaseURL = "https://umdjm.firebaseio.com/test";
     let firebaseRef = firebase.database().ref('/drawCommands');
 
     const canvas = document.querySelector('#draw');
@@ -62,7 +61,8 @@
             startX: lastX,
             startY: lastY,
             endX: e.offsetX,
-            endY: e.offsetY
+            endY: e.offsetY,
+            strokeStyle: ctx.strokeStyle
         };
 
         firebaseRef.push(segmentData);
@@ -72,6 +72,7 @@
     function drawSegment(segmentData){
         console.log(segmentData);
         ctx.beginPath();
+        ctx.strokeStyle = segmentData.strokeStyle;
         ctx.moveTo(segmentData.startX, segmentData.startY);
         ctx.lineTo(segmentData.endX, segmentData.endY);
         ctx.stroke();
