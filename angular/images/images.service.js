@@ -1,9 +1,9 @@
-angular.module('whiteboard')
+angular.module('lazHack6')
   .factory('Images', function($firebaseArray){
     var imageDataRef = firebase.database().ref('/images');
 
-    function saveCanvas(canvasId){
-        var canvas = document.querySelector(canvasId);
+    function saveCanvas(){
+        var canvas = document.querySelector("canvas");
         imageDataRef.push(canvas.toDataURL());
     }
 
