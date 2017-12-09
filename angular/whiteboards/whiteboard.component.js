@@ -51,7 +51,7 @@ angular.module('lazHack6')
             });
 
             whiteboard.ref.on("child_removed", function(){
-                clearHTML5Canvas();
+                resetHTML5Canvas();
             });
         };
 
@@ -84,11 +84,7 @@ angular.module('lazHack6')
 
           whiteboard.deleteLineSegments(lineToUndo)
               .then(function(){
-                  clearHTML5Canvas();
-                  whiteboard.lineSegments.forEach(function(lineSegment){
-                      drawSegment(lineSegment, lineSegment.$id);
-                  });
-
+                  resetHTML5Canvas();
               });
         };
 
@@ -96,10 +92,13 @@ angular.module('lazHack6')
             if(!lineId) return;
             whiteboard.recordDrawEvent(e, ctrl.savedLineWidth, ctrl.selectedColor, ctrl.postItMode, lineId);
         }
-        function clearHTML5Canvas(){
+        function resetHTML5Canvas(){
             undo = {};
             undoOrder = [];
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            whiteboard.lineSegments.forEach(function(lineSegment){
+                drawSegment(lineSegment, lineSegment.$id);
+            });
         }
 
         function drawSegment(segmentData, key){
