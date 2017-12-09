@@ -5,7 +5,7 @@ angular.module('lazHack6')
         bindings: {
         }
     })
-    .controller("whiteboardController", function(Images, whiteboard, utility){
+    .controller("whiteboardController", function(Images, whiteboard, utility, $timeout){
         var ctrl = this;
         var canvas;
         var ctx;
@@ -50,8 +50,15 @@ angular.module('lazHack6')
                 drawSegment(snapshot.val(), snapshot.key);
             });
 
+            var clearing = false;
             whiteboard.ref.on("child_removed", function(){
-                clearHTML5Canvas();
+                if(clearing) return;
+
+                clearing = true;
+                $timeout(function(){
+                    refreshCanvas();
+                    clearing = false;
+                }, 500);
             });
         };
 
@@ -84,7 +91,7 @@ angular.module('lazHack6')
 
           whiteboard.deleteLineSegments(lineToUndo)
               .then(function(){
-                  clearHTML5Canvas();
+                  refreshCanvas();
               });
         };
 
@@ -92,10 +99,13 @@ angular.module('lazHack6')
             if(!lineId) return;
             whiteboard.recordDrawEvent(e, ctrl.savedLineWidth, ctrl.selectedColor, ctrl.postItMode, lineId);
         }
-        function clearHTML5Canvas(){
+        function refreshCanvas(){
             undo = {};
             undoOrder = [];
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            whiteboard.lineSegments.forEach(function(lineSegment){
+                drawSegment(lineSegment, lineSegment.$id);
+            });
         }
 
         function drawSegment(segmentData, key){
