@@ -88,6 +88,7 @@ angular.module('lazHack6')
 
         ctrl.undo = function(){
           var lineToUndo = undo[undoOrder.pop()];
+          if(!lineToUndo) return;
 
           whiteboard.deleteLineSegments(lineToUndo)
               .then(function(){
