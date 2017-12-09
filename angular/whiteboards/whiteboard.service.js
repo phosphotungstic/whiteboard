@@ -5,7 +5,6 @@ angular.module('lazHack6')
       var lastY = 0;
       var isDrawing = false;
 
-
       function canvasToRelativeCoordinates(canvasCoords){
           canvas = document.querySelector('canvas');
           if(canvas.width && canvas.height){
@@ -21,7 +20,16 @@ angular.module('lazHack6')
           ({x: lastX, y: lastY} = canvasToRelativeCoordinates({x: e.offsetX, y: e.offsetY}));
       }
 
-      function recordDrawEvent(e, savedLineWidth, savedStrokeStyle, postItMode) {
+      function deleteLineSegments(lineSegments){
+          var keys = {};
+          while(lineSegments.length > 0) {
+              keys[lineSegments.pop()] = null;
+          }
+          return drawCommandsRef.update(keys);
+
+      }
+
+      function recordDrawEvent(e, savedLineWidth, savedStrokeStyle, postItMode, lineId) {
           let {x: newX, y: newY} = canvasToRelativeCoordinates({x: e.offsetX, y: e.offsetY});
 
           var segmentData = {
@@ -31,7 +39,8 @@ angular.module('lazHack6')
               endY: newY,
               strokeStyle: savedStrokeStyle,
               lineWidth: savedLineWidth,
-              isPostItMode: postItMode
+              isPostItMode: postItMode,
+              lineId: lineId
           };
 
           drawCommandsRef.push(segmentData);
@@ -43,7 +52,9 @@ angular.module('lazHack6')
           ref:  drawCommandsRef,
           startDraw: startDraw,
           recordDrawEvent: recordDrawEvent,
-          canvasToRelativeCoordinates: canvasToRelativeCoordinates
+          canvasToRelativeCoordinates: canvasToRelativeCoordinates,
+          deleteLineSegments: deleteLineSegments,
+          lineSegments: $firebaseArray(drawCommandsRef)
     };
 
   });
