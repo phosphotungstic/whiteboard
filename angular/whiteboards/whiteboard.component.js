@@ -28,7 +28,7 @@ angular.module('lazHack6')
                 whiteboard.startDraw(e);
             });
 
-            canvas.addEventListener('mouseup', function(e) {
+            document.addEventListener('mouseup', function(e) {
                 isDrawing = false;
             });
 
