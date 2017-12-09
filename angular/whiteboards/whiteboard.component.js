@@ -89,6 +89,15 @@ angular.module('lazHack6')
             ctx.beginPath();
             ctx.strokeStyle = segmentData.strokeStyle;
             ctx.lineWidth = segmentData.lineWidth;
+
+            if(segmentData.isPostItMode) {
+                ctx.shadowBlur = 70;
+                ctx.shadowColor = 'rgb(0, 0, 0)';
+            }
+            else {
+                ctx.shadowBlur = 0;
+                ctx.shadowColor = '';
+            }
             let {x: startX, y: startY} = relativeToCanvasCoordinates({x: segmentData.startX, y: segmentData.startY});
             let {x: endX, y: endY} = relativeToCanvasCoordinates({x: segmentData.endX, y: segmentData.endY});
             ctx.moveTo(startX, startY);
