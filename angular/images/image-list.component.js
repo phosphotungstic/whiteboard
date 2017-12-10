@@ -7,4 +7,8 @@ angular.module('lazHack6')
        var ctrl = this;
        ctrl.images = Images.data;
 
+       ctrl.delete = function(image){
+           Images.deleteImage(image);
+       }
+
     });

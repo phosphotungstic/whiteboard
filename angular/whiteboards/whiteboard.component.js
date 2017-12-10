@@ -20,8 +20,8 @@ angular.module('lazHack6')
         ctrl.$onInit = function(){
             canvas = document.querySelector('canvas');
             ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth / 2;
-            canvas.height = window.innerHeight / 2;
+            canvas.width = window.innerWidth * 0.9;
+            canvas.height = window.innerHeight * 0.9;
 
             canvas.addEventListener('mousedown', function(e){
                 isDrawing = true;

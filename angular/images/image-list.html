@@ -2,5 +2,6 @@
 <ul>
     <li ng-repeat="image in $ctrl.images">
         <img ng-src="{{image.$value}}"/>
+        <button ng-click="$ctrl.delete(image)">delete</button>
     </li>
 </ul>
