@@ -23,18 +23,18 @@ angular.module('lazHack6')
             canvas.width = window.innerWidth * 0.9;
             canvas.height = window.innerHeight * 0.9;
 
-            $("canvas").on('touchstart mousedown', function(e){
+            $("canvas").on('ontouchstart mousedown', function(e){
                 isDrawing = true;
                 lineId = utility.createGuid();
                 whiteboard.startDraw(e);
             });
 
-            $(document).on('mouseup touchend', function() {
+            $(document).on('mouseup ontouchend ontouchcancel', function() {
                 lineId = null;
                 isDrawing = false;
             });
 
-            $("canvas").on('mouseout mousemove mouseenter touchout touchmove touchenter', recordDrawEvent);
+            $("canvas").on('mouseout mousemove mouseenter ontouchmove', recordDrawEvent);
 
             whiteboard.ref.on("child_added", function(snapshot){
                 drawSegment(snapshot.val(), snapshot.key);
