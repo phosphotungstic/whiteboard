@@ -23,18 +23,16 @@ angular.module('lazHack6')
             canvas.width = window.innerWidth * 0.9;
             canvas.height = window.innerHeight * 0.9;
 
-            $("canvas").on('touchstart mousedown', function(e){
-                isDrawing = true;
-                lineId = utility.createGuid();
-                whiteboard.startDraw(e);
-            });
+            canvas.addEventListener("touchstart", startDraw);
+            $("canvas").on('mousedown', startDraw);
 
             $(document).on('mouseup touchend touchcancel', function() {
                 lineId = null;
                 isDrawing = false;
             });
 
-            $("canvas").on('mouseout mousemove mouseenter touchmove', recordDrawEvent);
+            canvas.addEventListener("touchmove", recordDrawEvent);
+            $("canvas").on('mouseout mousemove mouseenter', recordDrawEvent);
 
             whiteboard.ref.on("child_added", function(snapshot){
                 drawSegment(snapshot.val(), snapshot.key);
@@ -141,4 +139,9 @@ angular.module('lazHack6')
             }
         }
 
+        function startDraw(e){
+            isDrawing = true;
+            lineId = utility.createGuid();
+            whiteboard.startDraw(e);
+        }
     });
