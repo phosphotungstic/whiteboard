@@ -23,28 +23,18 @@ angular.module('lazHack6')
             canvas.width = window.innerWidth * 0.9;
             canvas.height = window.innerHeight * 0.9;
 
-            canvas.addEventListener('mousedown', function(e){
+            $("canvas").on('touchstart mousedown', function(e){
                 isDrawing = true;
                 lineId = utility.createGuid();
                 whiteboard.startDraw(e);
             });
 
-            document.addEventListener('mouseup', function(e) {
+            $(document).on('mouseup touchend', function() {
                 lineId = null;
                 isDrawing = false;
             });
 
-            canvas.addEventListener('mouseenter', function(e) {
-                recordDrawEvent(e);
-            });
-
-            canvas.addEventListener('mouseout', function(e) {
-                recordDrawEvent(e);
-            });
-
-            canvas.addEventListener('mousemove', function(e) {
-                recordDrawEvent(e);
-            });
+            $("canvas").on('mouseout mousemove mouseenter touchout touchmove touchenter', recordDrawEvent);
 
             whiteboard.ref.on("child_added", function(snapshot){
                 drawSegment(snapshot.val(), snapshot.key);
