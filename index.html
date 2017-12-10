@@ -1,41 +1,30 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="whiteboard">
+<html lang="en" ng-app="lazHack6">
 <head>
     <meta charset="UTF-8">
     <title>Whiteboard Hackathon Project</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas class="center" id="draw" width="800" height="800"></canvas>
 
-<b>Colorpick:</b>
-<div class="squareholder"></div>
-<br>
-<b>Brush Size:</b>
-<div class="sliderdiv center">
-    <input type="range" min="1" max="100" class="slider" id="brushsize" onchange="updateRange(this.value)" value="1">
-    <div class="center" id="rangeval">1</div>
-</div>
-<b>Brush Modes:</b>
-<button onclick="setDefaultMode()">Default</button>
-<button onclick="setPostItMode()">Post-it Mode</button>
+    <whiteboard>
+    </whiteboard>
 
-<div>
-    <button onclick="clearDrawingCanvas()">Clear</button>
-</div>
-<replay-drawing canvas-selector="#draw"></replay-drawing>
-<image-list canvas-selector="#draw">
+<image-list>
 </image-list>
 
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
 <script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.3/angular-ui-router.js"></script>
 
-<script src="script.js"></script>
-<script src="angular/whiteboard.module.js"></script>
-<script src="angular/image-list.component.js"></script>
-<script src="angular/images.service.js"></script>
-<script src="angular/replay-service.js"></script>
+<script src="angular/app.js"></script>
+<script src="angular/images/image-list.component.js"></script>
+<script src="angular/images/images.service.js"></script>
+<script src="angular/whiteboards/whiteboard.service.js"></script>
+<script src="angular/whiteboards/whiteboard.component.js"></script>
+<script src="angular/utility/utility.service.js"></script>
 <script src="angular/replay-drawing.component.js"></script>
 </body>
 </html>

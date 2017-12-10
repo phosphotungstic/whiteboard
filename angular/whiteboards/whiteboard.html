@@ -1,0 +1,29 @@
+<canvas class="center" width="800" height="800"></canvas>
+
+
+<b>Colorpick:</b>
+<div class="squareholder">
+    <div ng-repeat="color in $ctrl.colors"
+         class="colorsquare"
+         style="background-color: {{color}}"
+         ng-click="$ctrl.setColor(color)"
+        ng-class="{selected: color == $ctrl.selectedColor}">
+    </div>
+</div>
+
+<br>
+<b>Brush Size:</b>
+<div class="sliderdiv center">
+    <input id="brushsize" type="range" min="1" max="100" class="slider" ng-model="$ctrl.savedLineWidth">
+    <div class="center" id="rangeval">{{$ctrl.savedLineWidth}}</div>
+</div>
+<b>Brush Modes:</b>
+<button ng-click="$ctrl.setDefaultMode()">Default</button>
+<button ng-click="$ctrl.setPostItMode()">Post-it Mode</button>
+
+<div>
+    <button ng-click="$ctrl.undo()">Undo</button>
+    <button ng-click="$ctrl.clearDrawingCanvas()">Clear</button>
+    <replay-drawing></replay-drawing>
+    <button ng-click="$ctrl.saveCanvas()">Save Image</button>
+</div>
