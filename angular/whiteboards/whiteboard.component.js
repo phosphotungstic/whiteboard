@@ -5,7 +5,7 @@ angular.module('lazHack6')
         bindings: {
         }
     })
-    .controller("whiteboardController", function(Images, whiteboard, utility, $timeout){
+    .controller("whiteboardController", function(Images, whiteboard, utility, $timeout, $rootScope){
         var ctrl = this;
         var canvas;
         var ctx;
@@ -38,6 +38,14 @@ angular.module('lazHack6')
 
             whiteboard.ref.on("child_added", function(snapshot){
                 drawSegment(snapshot.val(), snapshot.key);
+            });
+
+            $rootScope.$on("external_draw_command", (scope, segmentData) => {
+                drawSegment(segmentData,  segmentData.$id);
+            });
+
+            $rootScope.$on("external_local_clear_command", () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
             });
 
             var clearing = false;

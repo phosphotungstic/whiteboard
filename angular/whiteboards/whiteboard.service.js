@@ -40,7 +40,8 @@ angular.module('lazHack6')
               strokeStyle: savedStrokeStyle,
               lineWidth: savedLineWidth,
               isPostItMode: postItMode,
-              lineId: lineId
+              lineId: lineId,
+              timeDrawn: (new Date()).getTime()
           };
 
           drawCommandsRef.push(segmentData);
