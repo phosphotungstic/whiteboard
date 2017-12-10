@@ -47,6 +47,7 @@ function recordDrawEvent(e) {
         startY: lastY,
         endX: newX,
         endY: newY,
+        timeDrawn: (new Date()).getTime(),
         strokeStyle: savedStrokeStyle,
         lineWidth: savedLineWidth,
         isPostItMode: postItMode
@@ -91,7 +92,7 @@ firebase.database().ref('/').on("child_removed", function(child){
     clearHTML5Canvas();
 });
 
-registerDrawingListiners();
+registerDrawingListeners();
 
 function setDefaultMode() {
     ctx.shadowBlur = 0;
@@ -105,7 +106,7 @@ function setPostItMode() {
     postItMode = true;
 }
 
-function registerDrawingListiners(){
+function registerDrawingListeners(){
     window.addEventListener('mousedown', (e) => {
         isDrawing = true;
         ({x: lastX, y: lastY} = canvasToRelativeCoordinates({x: e.offsetX, y: e.offsetY}));
